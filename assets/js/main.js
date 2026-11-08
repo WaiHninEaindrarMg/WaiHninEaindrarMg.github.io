@@ -130,4 +130,66 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // 7. Mobile Navigation (Hamburger Menu)
+  const burger = document.getElementById('nav-burger');
+  const navMobile = document.getElementById('nav-links');
+
+  function closeMobileNav() {
+    if (!burger || !navMobile) return;
+    navMobile.classList.remove('open');
+    burger.classList.remove('active');
+    burger.setAttribute('aria-expanded', 'false');
+  }
+
+  if (burger && navMobile) {
+    burger.addEventListener('click', () => {
+      const isOpen = navMobile.classList.toggle('open');
+      burger.classList.toggle('active', isOpen);
+      burger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    // Close menu when a link is tapped
+    navMobile.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));
+
+    // Close when resizing back to desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 960) closeMobileNav();
+    });
+  }
+
+  // 8. Scroll-Reveal Animations (progressive enhancement)
+  const revealTargets = document.querySelectorAll(
+    '.section-header, .kpi-card, .pillar-card, .project-card, .pub-card, .skill-box, .timeline-item, .profile-card'
+  );
+  if ('IntersectionObserver' in window) {
+    revealTargets.forEach(el => el.classList.add('reveal'));
+    const revealObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    revealTargets.forEach(el => revealObserver.observe(el));
+  }
+
+  // 9. Back-to-Top Button + Navbar elevation on scroll
+  const backToTop = document.getElementById('back-to-top');
+  const navbar = document.querySelector('.navbar');
+
+  function onScrollUI() {
+    const y = window.scrollY;
+    if (backToTop) backToTop.classList.toggle('visible', y > 600);
+    if (navbar) navbar.classList.toggle('scrolled', y > 10);
+  }
+  window.addEventListener('scroll', onScrollUI, { passive: true });
+  onScrollUI();
+
+  if (backToTop) {
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 });
